@@ -56,6 +56,12 @@ public class UpdateMappingRulesService {
             String msg = String.format(MAPPING_RULES_CHANGED_ERROR_MSG, changedMappingRules.keySet());
             exitWithError(msg);
         }
+
+        ObjectNode poppyClassificationRules = FileWorker.getJsonObject(POPPY_MAPPING_RULES_PATH + "classificationFieldMappingRules.json");
+        MappingRulesUtil.replaceMappingRulesForMarcFields(poppyClassificationRules, (ObjectNode) existingMappingRules);
+
+        srmClient.updateMappingRules(existingMappingRules, MARC_BIB);
+        log.info("Mapping rules for \"classification\" field have been successfully updated on the target environment");
     }
 
 }

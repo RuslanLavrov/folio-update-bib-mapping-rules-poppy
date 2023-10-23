@@ -23,7 +23,7 @@ public class FolioMappingRulesUpdateApp implements CommandLineRunner {
 
     public static void exitWithError(String errorMessage) {
         log.error(errorMessage);
-        System.exit(0);
+        System.exit(1);
     }
 
     public static void exitWithMessage(String message) {
