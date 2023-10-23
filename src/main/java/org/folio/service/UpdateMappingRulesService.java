@@ -11,6 +11,8 @@ import org.folio.util.HttpWorker;
 import org.folio.util.MappingRulesUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.folio.FolioMappingRulesUpdateApp.exitWithError;
@@ -23,8 +25,8 @@ public class UpdateMappingRulesService {
     private static final String ORCHID_MAPPING_RULES_PATH = "mappingRules/orchidMappingRules/";
     private static final String POPPY_MAPPING_RULES_PATH = "mappingRules/poppyMappingRules/";
     public static final String MAPPING_RULES_CHANGED_ERROR_MSG = """
-        Failed to update exising mapping rules for the 'classification' field because they were changed/customized for the following MARC fields: %s.
-        The mapping for the 'classification' field should be updated manually by following this guide:
+        Failed to update exising mapping rules for the instance 'classification' field for the following MARC fields: %s because they were changed/customized by user.
+        The mapping of the 'classification' field for the MARC field/s: %s should be updated manually by following this guide:
         https://wiki.folio.org/display/FOLIJET/Update+of+mapping+to+correct+handling+of+repeated+classification+fields+and+subfields
         """;
     private MappingRulesUtil mappingRulesUtil;
@@ -52,16 +54,26 @@ public class UpdateMappingRulesService {
 
         ObjectNode orchidClassificationRules = FileWorker.getJsonObject(ORCHID_MAPPING_RULES_PATH + "classificationFieldMappingRules.json");
         Map<String, JsonNode> changedMappingRules = MappingRulesUtil.getChangedMappingRules(orchidClassificationRules, existingMappingRules);
-        if (!changedMappingRules.isEmpty()) {
-            String msg = String.format(MAPPING_RULES_CHANGED_ERROR_MSG, changedMappingRules.keySet());
-            exitWithError(msg);
+        ObjectNode poppyClassificationRules = FileWorker.getJsonObject(POPPY_MAPPING_RULES_PATH + "classificationFieldMappingRules.json");
+        ObjectNode preparedPoppyClassificationRules = MappingRulesUtil.getMappingRulesExcludingByMarcFields(poppyClassificationRules, changedMappingRules.keySet());
+
+        if (!preparedPoppyClassificationRules.isEmpty()) {
+            MappingRulesUtil.replaceMappingRulesForMarcFields(preparedPoppyClassificationRules, (ObjectNode) existingMappingRules);
+            srmClient.updateMappingRules(existingMappingRules, MARC_BIB);
+            log.info("Mapping rules for \"classification\" field have been successfully updated on the target environment for the following MARC fields: {}",
+                extractMarcFields(preparedPoppyClassificationRules));
         }
 
-        ObjectNode poppyClassificationRules = FileWorker.getJsonObject(POPPY_MAPPING_RULES_PATH + "classificationFieldMappingRules.json");
-        MappingRulesUtil.replaceMappingRulesForMarcFields(poppyClassificationRules, (ObjectNode) existingMappingRules);
+        if (!changedMappingRules.isEmpty()) {
+            String msg = String.format(MAPPING_RULES_CHANGED_ERROR_MSG, changedMappingRules.keySet(), changedMappingRules.keySet());
+            exitWithError(msg);
+        }
+    }
 
-        srmClient.updateMappingRules(existingMappingRules, MARC_BIB);
-        log.info("Mapping rules for \"classification\" field have been successfully updated on the target environment");
+    private static List<String> extractMarcFields(ObjectNode preparedPoppyClassificationRules) {
+        List<String> fields = new ArrayList<>();
+        preparedPoppyClassificationRules.fieldNames().forEachRemaining(fields::add);
+        return fields;
     }
 
 }
