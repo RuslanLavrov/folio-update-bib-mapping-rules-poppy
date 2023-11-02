@@ -47,7 +47,7 @@
     </dependencies>
 
     <build>
-        <finalName>folio-mapping-rules-update-poppy</finalName>
+        <finalName>folio-contributors-field-mapping-rules-update-poppy</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
