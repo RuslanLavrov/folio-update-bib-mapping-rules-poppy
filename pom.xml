@@ -10,10 +10,9 @@
     </parent>
 
     <groupId>org.folio</groupId>
-    <artifactId>folio-mapping-rules-update-orchid</artifactId>
+    <artifactId>folio-update-bib-mapping-rules-poppy</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>folio-mapping-rules-update-orchid</name>
-    <description>folio-mapping-rules-update-orchid</description>
+    <name>folio-update-bib-mapping-rules-poppy</name>
 
     <properties>
         <java.version>17</java.version>

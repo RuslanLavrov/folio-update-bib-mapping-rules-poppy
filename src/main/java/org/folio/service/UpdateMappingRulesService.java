@@ -27,7 +27,7 @@ public class UpdateMappingRulesService {
     public static final String MAPPING_RULES_CHANGED_ERROR_MSG = """
         Failed to update exising mapping rules for the instance 'contributors' field for the following MARC fields: %s because they were changed/customized by user.
         The mapping of the 'contributors' field for the MARC field/s: %s should be updated manually by following this guide:
-        https://wiki.folio.org/display/FOLIJET/Update+of+mapping+to+correct+handling+of+repeated+classification+fields+and+subfields
+        https://wiki.folio.org/pages/viewpage.action?pageId=139102970
         """;
     private Configuration configuration;
     private SRMClient srmClient;
