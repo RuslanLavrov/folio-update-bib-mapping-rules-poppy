@@ -29,7 +29,6 @@ public class UpdateMappingRulesService {
         The mapping of the 'classification' field for the MARC field/s: %s should be updated manually by following this guide:
         https://wiki.folio.org/display/FOLIJET/Update+of+mapping+to+correct+handling+of+repeated+classification+fields+and+subfields
         """;
-    private MappingRulesUtil mappingRulesUtil;
     private Configuration configuration;
     private SRMClient srmClient;
     private String MARC_BIB = "marc-bib";
@@ -40,9 +39,7 @@ public class UpdateMappingRulesService {
         var authClient = new AuthClient(configuration, httpWorker);
         
         httpWorker.setOkapiToken(authClient.authorize());
-
         srmClient = new SRMClient(httpWorker);
-        mappingRulesUtil = new MappingRulesUtil();
 
         updateMappingRules();
 
